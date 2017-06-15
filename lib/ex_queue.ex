@@ -33,6 +33,8 @@ defmodule ExQueue do
   @typedoc "The ExQueue type"
   @type t :: %__MODULE__{queue: :queue.queue(any())}
 
+  ## Original API
+
   @doc """
   Returns a new, empty queue
 
@@ -290,6 +292,118 @@ defmodule ExQueue do
   """
   def to_list(%__MODULE__{queue: q}) do
     :queue.to_list(q)
+  end
+
+  ## Extended API
+
+  @doc """
+  Returns the queue that is the result of removing
+  the front item from `ex_queue`.
+
+      iex> q = ExQueue.from_list([1,2,3,4,5])
+      iex> q |> ExQueue.drop() |> ExQueue.to_list
+      [2,3,4,5]
+
+  Returns `:empty` if `ex_queue` is empty
+
+      iex> ExQueue.new() |> ExQueue.drop
+      :empty
+
+  """
+  def drop(%__MODULE__{queue: q}) do
+    try do
+      :queue.drop(q) |> wrap_in_struct
+    rescue
+      ErlangError -> :empty
+    end
+  end
+
+  @doc """
+  Returns the queue that is the result of removing
+  the last item from `ex_queue`
+
+      iex> q = ExQueue.from_list([1,2,3,4,5])
+      iex> q |> ExQueue.drop_r() |> ExQueue.to_list
+      [1,2,3,4]
+
+  Returns `:empty` if `ex_queue` is empty
+
+      iex> ExQueue.new() |> ExQueue.drop
+      :empty
+
+  """
+  def drop_r(%__MODULE__{queue: q}) do
+    try do
+      :queue.drop_r(q) |> wrap_in_struct
+    rescue
+      ErlangError -> :empty
+    end
+  end
+
+  @doc """
+  Returns the front item of a queue, or `:empty`
+
+      iex> ExQueue.from_list([1,2,3]) |> ExQueue.get()
+      1
+
+      iex> ExQueue.new() |> ExQueue.get()
+      :empty
+
+  """
+  def get(%__MODULE__{queue: q}) do
+    try do
+      :queue.get(q)
+    rescue
+      ErlangError -> :empty
+    end
+  end
+
+  @doc """
+  Returns the last item of a queue, or `:empty`
+
+      iex> ExQueue.from_list([1,2,3]) |> ExQueue.get_r()
+      3
+
+      iex> ExQueue.new() |> ExQueue.get_r()
+      :empty
+
+  """
+  def get_r(%__MODULE__{queue: q}) do
+    try do
+      :queue.get_r(q)
+    rescue
+      ErlangError -> :empty
+    end
+  end
+
+  @doc """
+  Returns a tuple `{:value, item}, where `item` is the front item of a queue,
+  or `:empty`
+
+      iex> ExQueue.from_list([1,2,3]) |> ExQueue.peek()
+      {:value, 1}
+
+      iex> ExQueue.new() |> ExQueue.peek()
+      :empty
+
+  """
+  def peek(%__MODULE__{queue: q}) do
+    :queue.peek(q)
+  end
+
+  @doc """
+  Returns a tuple `{:value, item}`, where `item` is the last item of a queue,
+  or `:empty`
+
+      iex> ExQueue.from_list([1,2,3]) |> ExQueue.peek_r()
+      {:value, 3}
+
+      iex> ExQueue.new() |> ExQueue.peek_r()
+      :empty
+
+  """
+  def peek_r(%__MODULE__{queue: q}) do
+    :queue.peek_r(q)
   end
 
   defp wrap_in_struct(q) do
