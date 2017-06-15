@@ -1,12 +1,14 @@
 # ExQueue
 
 An elixir port of Erlang's [`queue`](http://erlang.org/doc/man/queue.html)
-library, providing the same API with 2 primary changes:
+library, providing the same API with three major changes:
 
 * Argument order is reversed to make the queue object the first parameter,
   allowing for Elixir-style function piping
 * `:queue.in/2` and `:queue.out/1` have been replaced with `ExQueue.push/2`
   and `ExQueue.pop/1`, as well as their `_r` variants.
+* functions that would fail with `ErlangError` when given an empty queue
+  now return thet atom `:empty`
 
 ## Example Usage
 
@@ -39,7 +41,7 @@ end
 
 ## API
 
-Currently this library only includes the functions included in the "Original API"
+This library includes the Original, Extended, and Okasaki APIs
 
 ## Documentation
 
