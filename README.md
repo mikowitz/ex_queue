@@ -27,6 +27,32 @@ library, providing the same API with three major changes:
     iex> ExQueue.is_empty(q)
     true
 
+### Extended API
+
+    iex> q = ExQueue.new
+    ...>   |> ExQueue.push("one")
+    ...>   |> ExQueue.push_r("zero")
+    ...>   |> ExQueue.push("two")
+    iex> q = ExQueue.drop(q)
+    iex> ExQueue.get(q)
+    "one"
+    iex> ExQueue.peek_r(q)
+    {:value, "two"}
+
+### Okasaki API
+
+    iex> q = ExQueue.new
+    ...>   |> ExQueue.push("one")
+    ...>   |> ExQueue.push_r("zero")
+    ...>   |> ExQueue.push("two")
+    iex> q = ExQueue.cons(q, "negative one")
+    iex> q = ExQueue.snoc(q, "three")
+    iex> ExQueue.head(q)
+    "negative one"
+    iex> ExQueue.daeh(q)
+    "three"
+
+See inline [documentation](#documentation) for more examples.
 
 ## Installation
 

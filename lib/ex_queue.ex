@@ -2,15 +2,18 @@ defmodule ExQueue do
   @moduledoc """
 
   An elixir port of Erlang's [`queue`](http://erlang.org/doc/man/queue.html)
-  library, providing the same API with 2 primary changes:
+  library.
 
-  * Argument order is reversed to make the queue object the first parameter,
-    allowing for Elixir-style function piping
+  This library provides the same API with three major changes:
+
+  * Argument order is made constant so that the queue object is always the
+    first parameter, allowing for Elixir-style function piping
   * `:queue.in/2` and `:queue.out/1` have been replaced with `ExQueue.push/2`
     and `ExQueue.pop/1`, as well as their `_r` variants.
+  * Functions that would fail with `ErlangError` when given an empty queue
+    now return the atom `:empty`
 
-
-  ## Example Usage
+  ### Original API
 
       iex> q = ExQueue.new
       iex> ExQueue.len(q)
@@ -26,6 +29,34 @@ defmodule ExQueue do
       iex> {:empty, _} = ExQueue.pop(q)
       iex> ExQueue.is_empty(q)
       true
+
+
+  ### Extended API
+
+      iex> q = ExQueue.new
+      ...>   |> ExQueue.push("one")
+      ...>   |> ExQueue.push_r("zero")
+      ...>   |> ExQueue.push("two")
+      iex> q = ExQueue.drop(q)
+      iex> ExQueue.get(q)
+      "one"
+      iex> ExQueue.peek_r(q)
+      {:value, "two"}
+
+  ### Okasaki API
+
+      iex> q = ExQueue.new
+      ...>   |> ExQueue.push("one")
+      ...>   |> ExQueue.push_r("zero")
+      ...>   |> ExQueue.push("two")
+      iex> q = ExQueue.cons(q, "negative one")
+      iex> q = ExQueue.snoc(q, "three")
+      iex> ExQueue.head(q)
+      "negative one"
+      iex> ExQueue.daeh(q)
+      "three"
+
+  See inline documentation for more examples.
 
   """
   defstruct queue: nil
